@@ -1,0 +1,1 @@
+// useResponsiveConfig - Responsive configuration hook
