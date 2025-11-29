@@ -52,4 +52,10 @@ export const SOCIAL_LINKS = [
   { icon: "logo-vercel", href: "#", label: "Vercel" },
 ] as const;
 
-export const FOOTER_LINKS = [];
+export const FOOTER_LINKS = [
+  { label: "Cookie Settings", href: "#" },
+  { label: "Privacy Policy", href: "#" },
+  { label: "Legal Disclaimer", href: "#" },
+] as const;
+
+export const COPYRIGHT_TEXT = "Copyright © 2025 All Rights Reserved";
