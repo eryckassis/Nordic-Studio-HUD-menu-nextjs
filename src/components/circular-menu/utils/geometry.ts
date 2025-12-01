@@ -1,5 +1,3 @@
-// Geometry utilities for segment calculations
-
 import type { ResponsiveConfig, SegmentGeometry } from "../CircularMenu.types";
 import { SEGMENT_GAP } from "../constants/menu.constants";
 
@@ -68,4 +66,19 @@ export const calculateSegmentGeometry = (
     contentX,
     contentY,
   };
+};
+
+export const getSegmentIndexFromPosition = (
+  x: number,
+  y: number,
+  totalSegments: number
+): number => {
+  const angleDegrees = Math.atan2(y, x) * (180 / Math.PI);
+  const normalizeAngle = (angleDegrees + 90 + 360) % 360;
+  const segmentIndex = Math.floor(normalizeAngle / (360 / totalSegments));
+  return segmentIndex % totalSegments;
+};
+
+export const getDistance = (x: number, y: number): number => {
+  return Math.sqrt(x * x + y * y);
 };
