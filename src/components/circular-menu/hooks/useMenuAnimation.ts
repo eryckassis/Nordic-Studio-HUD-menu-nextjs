@@ -1,30 +1,33 @@
-import { ANIMATION_CONFIG } from "./../constants/menu.constants";
-import { JoystickPosition } from "./../CircularMenu.types";
-import React, { useCallback, useRef } from "react";
+// useMenuAnimation - GSAP animation logic hook
+
+import { useCallback, useRef } from "react";
 import { gsap } from "gsap";
 import { ANIMATION_CONFIG } from "../constants/menu.constants";
 import { playMenuOpenSound, playMenuCloseSound } from "../utils/audio";
 
 interface UseMenuAnimationProps {
-  // ref de overlay principcal
   overlayRef: React.RefObject<HTMLDivElement | null>;
-  // ref de navegacao superiror
+
   navRef: React.RefObject<HTMLDivElement | null>;
-  // ref de footer
+
   footerRef: React.RefObject<HTMLDivElement | null>;
-  // ref do controle joystick
+
   joystickRef: React.RefObject<HTMLDivElement | null>;
-  // ref de container do menu
+
   menuRef: React.RefObject<HTMLDivElement | null>;
-  // desabilitar som
+
   disableSounds?: boolean;
 }
 
 interface UseMenuAnimationReturn {
   isOpen: boolean;
+
   isAnimating: boolean;
+
   openMenu: () => void;
+
   closeMenu: () => void;
+
   toggleMenu: () => void;
 }
 
@@ -32,10 +35,11 @@ export const useMenuAnimation = ({
   overlayRef,
   navRef,
   footerRef,
-  JoystickRef,
+  joystickRef,
   menuRef,
   disableSounds = false,
-}: useMenuAnimationProps): useMenuAnimationReturn => {
+}: UseMenuAnimationProps): UseMenuAnimationReturn => {
+  // Usamos refs para estado que não precisa causar re-render
   const isOpenRef = useRef(false);
   const isAnimatingRef = useRef(false);
 
@@ -50,10 +54,11 @@ export const useMenuAnimation = ({
 
   const openMenu = useCallback(() => {
     if (isAnimatingRef.current || isOpenRef.current) return;
+
     const overlay = overlayRef.current;
     const nav = navRef.current;
     const footer = footerRef.current;
-    const joystick = JoystickRef.current;
+    const joystick = joystickRef.current;
     const menu = menuRef.current;
 
     if (!overlay || !nav || !footer || !joystick || !menu) return;
@@ -61,10 +66,12 @@ export const useMenuAnimation = ({
     isAnimatingRef.current = true;
     isOpenRef.current = true;
 
+    // Toca som de abertura
     if (!disableSounds) {
       playMenuOpenSound();
     }
 
+    // Fade in do overlay
     gsap.to(overlay, {
       opacity: 1,
       duration: ANIMATION_CONFIG.OVERLAY_DURATION,
@@ -74,11 +81,133 @@ export const useMenuAnimation = ({
       },
     });
 
+    // Scale in do joystick
     gsap.to(joystick, {
       scale: 1,
       duration: ANIMATION_CONFIG.JOYSTICK_DURATION,
       delay: ANIMATION_CONFIG.JOYSTICK_DELAY,
       ease: "back.out(1.7)",
     });
-  });
+
+    // Flicker da nav e footer
+    gsap.set([nav, footer], { opacity: 0 });
+    gsap.to([nav, footer], {
+      opacity: 1,
+      duration: ANIMATION_CONFIG.SEGMENT_FLICKER_DURATION,
+      delay: ANIMATION_CONFIG.OVERLAY_DURATION,
+      repeat: ANIMATION_CONFIG.FLICKER_REPEATS,
+      yoyo: true,
+      ease: "power2.inOut",
+      onComplete: () => {
+        gsap.set([nav, footer], { opacity: 1 });
+      },
+    });
+
+    // Anima segmentos em ordem aleatória
+    const segments = menu.querySelectorAll(".menu-segment");
+    const indices = shuffleArray([...Array(segments.length).keys()]);
+
+    indices.forEach((originalIndex, shuffledPosition) => {
+      const segment = segments[originalIndex];
+      gsap.set(segment, { opacity: 0 });
+      gsap.to(segment, {
+        opacity: 1,
+        duration: ANIMATION_CONFIG.SEGMENT_FLICKER_DURATION,
+        delay: shuffledPosition * ANIMATION_CONFIG.SEGMENT_STAGGER,
+        repeat: ANIMATION_CONFIG.FLICKER_REPEATS,
+        yoyo: true,
+        ease: "power2.inOut",
+        onComplete: () => {
+          gsap.set(segment, { opacity: 1 });
+
+          if (shuffledPosition === segments.length - 1) {
+            isAnimatingRef.current = false;
+          }
+        },
+      });
+    });
+  }, [overlayRef, navRef, footerRef, joystickRef, menuRef, disableSounds]);
+
+  const closeMenu = useCallback(() => {
+    if (isAnimatingRef.current || !isOpenRef.current) return;
+
+    const overlay = overlayRef.current;
+    const nav = navRef.current;
+    const footer = footerRef.current;
+    const joystick = joystickRef.current;
+    const menu = menuRef.current;
+
+    if (!overlay || !nav || !footer || !joystick || !menu) return;
+
+    isAnimatingRef.current = true;
+    isOpenRef.current = false;
+
+    if (!disableSounds) {
+      playMenuCloseSound();
+    }
+
+    gsap.to([nav, footer], {
+      opacity: 0,
+      duration: 0.05,
+      repeat: 2,
+      yoyo: true,
+      ease: "power2.inOut",
+      onComplete: () => {
+        gsap.set([nav, footer], { opacity: 0 });
+      },
+    });
+
+    gsap.to(joystick, {
+      scale: 0,
+      duration: ANIMATION_CONFIG.OVERLAY_DURATION,
+      delay: ANIMATION_CONFIG.JOYSTICK_DELAY,
+      ease: "back.in(1.7)",
+    });
+
+    const segments = menu.querySelectorAll(".menu-segment");
+    const indices = shuffleArray([...Array(segments.length).keys()]);
+
+    indices.forEach((originalIndex, shuffledPosition) => {
+      const segment = segments[originalIndex];
+      gsap.to(segment, {
+        opacity: 0,
+        duration: 0.05,
+        delay: shuffledPosition * 0.05,
+        repeat: 2,
+        yoyo: true,
+        ease: "power2.inOut",
+        onComplete: () => {
+          gsap.set(segment, { opacity: 0 });
+        },
+      });
+    });
+
+    // Fade out do overlay
+    gsap.to(overlay, {
+      opacity: 0,
+      duration: ANIMATION_CONFIG.OVERLAY_DURATION,
+      delay: 0.6,
+      ease: "power2.out",
+      onComplete: () => {
+        overlay.style.pointerEvents = "none";
+        isAnimatingRef.current = false;
+      },
+    });
+  }, [overlayRef, navRef, footerRef, joystickRef, menuRef, disableSounds]);
+
+  const toggleMenu = useCallback(() => {
+    if (isOpenRef.current) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  }, [openMenu, closeMenu]);
+
+  return {
+    isOpen: isOpenRef.current,
+    isAnimating: isAnimatingRef.current,
+    openMenu,
+    closeMenu,
+    toggleMenu,
+  };
 };
