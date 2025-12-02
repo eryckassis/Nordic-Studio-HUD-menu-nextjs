@@ -1,4 +1,3 @@
-// Audio utilities for sound playback
 import { AUDIO_PATHS } from "../constants/menu.constants";
 
 const audioCache = new Map<string, HTMLAudioElement>();
@@ -25,6 +24,10 @@ export const playMenuOpenSound = (): void => {
 
 export const playMenuCloseSound = (): void => {
   playSound(AUDIO_PATHS.MENU_CLOSE);
+};
+
+export const playMenuSelectSound = (): void => {
+  playSound(AUDIO_PATHS.MENU_SELECT);
 };
 
 export const preloadMenuSounds = (): void => {
