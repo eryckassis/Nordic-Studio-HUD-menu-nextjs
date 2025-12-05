@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- Logo/Banner -->
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d1117,100:161b22&height=200&section=header&text=Nordic%20Studio&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=HUD%20Circular%20Menu&descSize=20&descAlignY=55" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0d1117,100:161b22&height=200&section=header&text=NORDIC%20STUDIO&fontSize=60&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=HUD%20Circular%20Menu&descSize=20&descAlignY=55" width="100%"/>
 
 <!-- Badges -->
 <p>
