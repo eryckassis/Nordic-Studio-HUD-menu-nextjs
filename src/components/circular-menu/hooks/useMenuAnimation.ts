@@ -1,33 +1,24 @@
 // useMenuAnimation - GSAP animation logic hook
 
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ANIMATION_CONFIG } from "../constants/menu.constants";
 import { playMenuOpenSound, playMenuCloseSound } from "../utils/audio";
 
 interface UseMenuAnimationProps {
   overlayRef: React.RefObject<HTMLDivElement | null>;
-
   navRef: React.RefObject<HTMLDivElement | null>;
-
   footerRef: React.RefObject<HTMLDivElement | null>;
-
   joystickRef: React.RefObject<HTMLDivElement | null>;
-
   menuRef: React.RefObject<HTMLDivElement | null>;
-
   disableSounds?: boolean;
 }
 
 interface UseMenuAnimationReturn {
   isOpen: boolean;
-
   isAnimating: boolean;
-
   openMenu: () => void;
-
   closeMenu: () => void;
-
   toggleMenu: () => void;
 }
 
@@ -39,8 +30,10 @@ export const useMenuAnimation = ({
   menuRef,
   disableSounds = false,
 }: UseMenuAnimationProps): UseMenuAnimationReturn => {
-  // Usamos refs para estado que não precisa causar re-render
-  const isOpenRef = useRef(false);
+  // useState para isOpen - causa re-render quando muda
+  const [isOpen, setIsOpen] = useState(false);
+
+  // useRef para isAnimating - não precisa causar re-render
   const isAnimatingRef = useRef(false);
 
   const shuffleArray = <T>(array: T[]): T[] => {
@@ -53,7 +46,7 @@ export const useMenuAnimation = ({
   };
 
   const openMenu = useCallback(() => {
-    if (isAnimatingRef.current || isOpenRef.current) return;
+    if (isAnimatingRef.current || isOpen) return;
 
     const overlay = overlayRef.current;
     const nav = navRef.current;
@@ -64,14 +57,12 @@ export const useMenuAnimation = ({
     if (!overlay || !nav || !footer || !joystick || !menu) return;
 
     isAnimatingRef.current = true;
-    isOpenRef.current = true;
+    setIsOpen(true);
 
-    // Toca som de abertura
     if (!disableSounds) {
       playMenuOpenSound();
     }
 
-    // Fade in do overlay
     gsap.to(overlay, {
       opacity: 1,
       duration: ANIMATION_CONFIG.OVERLAY_DURATION,
@@ -81,7 +72,6 @@ export const useMenuAnimation = ({
       },
     });
 
-    // Scale in do joystick
     gsap.to(joystick, {
       scale: 1,
       duration: ANIMATION_CONFIG.JOYSTICK_DURATION,
@@ -89,7 +79,6 @@ export const useMenuAnimation = ({
       ease: "back.out(1.7)",
     });
 
-    // Flicker da nav e footer
     gsap.set([nav, footer], { opacity: 0 });
     gsap.to([nav, footer], {
       opacity: 1,
@@ -103,7 +92,6 @@ export const useMenuAnimation = ({
       },
     });
 
-    // Anima segmentos em ordem aleatória
     const segments = menu.querySelectorAll(".menu-segment");
     const indices = shuffleArray([...Array(segments.length).keys()]);
 
@@ -119,17 +107,24 @@ export const useMenuAnimation = ({
         ease: "power2.inOut",
         onComplete: () => {
           gsap.set(segment, { opacity: 1 });
-
           if (shuffledPosition === segments.length - 1) {
             isAnimatingRef.current = false;
           }
         },
       });
     });
-  }, [overlayRef, navRef, footerRef, joystickRef, menuRef, disableSounds]);
+  }, [
+    overlayRef,
+    navRef,
+    footerRef,
+    joystickRef,
+    menuRef,
+    disableSounds,
+    isOpen,
+  ]);
 
   const closeMenu = useCallback(() => {
-    if (isAnimatingRef.current || !isOpenRef.current) return;
+    if (isAnimatingRef.current || !isOpen) return;
 
     const overlay = overlayRef.current;
     const nav = navRef.current;
@@ -140,7 +135,7 @@ export const useMenuAnimation = ({
     if (!overlay || !nav || !footer || !joystick || !menu) return;
 
     isAnimatingRef.current = true;
-    isOpenRef.current = false;
+    setIsOpen(false);
 
     if (!disableSounds) {
       playMenuCloseSound();
@@ -182,7 +177,6 @@ export const useMenuAnimation = ({
       });
     });
 
-    // Fade out do overlay
     gsap.to(overlay, {
       opacity: 0,
       duration: ANIMATION_CONFIG.OVERLAY_DURATION,
@@ -193,18 +187,26 @@ export const useMenuAnimation = ({
         isAnimatingRef.current = false;
       },
     });
-  }, [overlayRef, navRef, footerRef, joystickRef, menuRef, disableSounds]);
+  }, [
+    overlayRef,
+    navRef,
+    footerRef,
+    joystickRef,
+    menuRef,
+    disableSounds,
+    isOpen,
+  ]);
 
   const toggleMenu = useCallback(() => {
-    if (isOpenRef.current) {
+    if (isOpen) {
       closeMenu();
     } else {
       openMenu();
     }
-  }, [openMenu, closeMenu]);
+  }, [openMenu, closeMenu, isOpen]);
 
   return {
-    isOpen: isOpenRef.current,
+    isOpen,
     isAnimating: isAnimatingRef.current,
     openMenu,
     closeMenu,
