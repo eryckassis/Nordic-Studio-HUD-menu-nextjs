@@ -1,4 +1,4 @@
-import { CircularMenu } from "@/components/circular-menu";
+import { CircularMenu } from "../components/circular-menu";
 
 export default function Home() {
   return (

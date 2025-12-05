@@ -1,5 +1,32 @@
+@import "tailwindcss";
+
+/* ============================================
+   FONTS
+   ============================================ */
 @import url("https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
 
+/* ============================================
+   CSS VARIABLES (Design Tokens)
+   ============================================ */
+:root {
+  --font-primary: "Host Grotesk", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --color-bg: #000;
+  --color-text: #fff;
+  --color-text-dark: #000;
+
+  --menu-toggle-size: 25rem;
+  --menu-toggle-height: 10rem;
+  --joystick-size: 100px;
+
+  --transition-fast: 0.3s;
+  --transition-medium: 0.35s;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
 * {
   margin: 0;
   padding: 0;
@@ -7,44 +34,61 @@
 }
 
 body {
-  font-family: "Host Grotesk";
-  background: #000;
+  font-family: var(--font-primary);
+  background: var(--color-bg);
 }
 
 p,
 a {
-  color: #fff;
+  color: var(--color-text);
   text-decoration: none;
   text-transform: uppercase;
-  font-family: "IBM Plex Mono";
+  font-family: var(--font-mono);
   font-size: 11px;
 }
 
+/* ============================================
+   MENU TOGGLE BUTTON
+   ============================================ */
 .menu-toggle-btn {
   position: fixed;
   bottom: -6rem;
   left: 50%;
   transform: translateX(-50%);
-  width: 25rem;
-  height: 10rem;
+  width: var(--menu-toggle-size);
+  height: var(--menu-toggle-height);
   padding-top: 2rem;
+  border: none;
   border-radius: 50% 50% 0 0 / 90% 90% 0 0;
-  background-color: #fff;
-  color: #000;
+  background-color: var(--color-text);
+  color: var(--color-text-dark);
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   gap: 0.25rem;
   cursor: pointer;
+  transition: transform var(--transition-fast) ease;
+}
+
+.menu-toggle-btn:hover {
+  transform: translateX(-50%) translateY(-0.5rem);
+}
+
+.menu-toggle-btn:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 4px;
 }
 
 .menu-toggle-btn .hamburger-bar {
   width: 2rem;
   height: 0.125rem;
-  background-color: #000;
+  background-color: var(--color-text-dark);
 }
 
+/* ============================================
+   MENU OVERLAY
+   ============================================ */
 .menu-overlay {
   position: fixed;
   top: 0;
@@ -56,6 +100,8 @@ a {
   align-items: center;
   overflow: hidden;
   z-index: 100;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .menu-bg {
@@ -66,6 +112,9 @@ a {
   background-size: cover;
 }
 
+/* ============================================
+   OVERLAY NAV & FOOTER
+   ============================================ */
 .menu-overlay-nav,
 .menu-overlay-footer {
   position: absolute;
@@ -84,11 +133,22 @@ a {
   bottom: 0;
 }
 
+/* ============================================
+   CLOSE BUTTON
+   ============================================ */
 .close-btn {
   position: relative;
   width: 1.5rem;
   height: 1.5rem;
   cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.close-btn:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 4px;
 }
 
 .close-btn .close-btn-bar {
@@ -96,7 +156,7 @@ a {
   top: 50%;
   width: 1.5rem;
   height: 0.125rem;
-  background-color: #fff;
+  background-color: var(--color-text);
 }
 
 .close-btn .close-btn-bar:nth-child(1) {
@@ -107,6 +167,9 @@ a {
   transform: rotate(-45deg);
 }
 
+/* ============================================
+   OVERLAY ITEMS
+   ============================================ */
 .menu-overlay-items {
   display: flex;
   gap: 1rem;
@@ -114,8 +177,16 @@ a {
 
 .menu-overlay-nav .menu-overlay-items a {
   font-size: 18px;
+  transition: opacity var(--transition-fast) ease;
 }
 
+.menu-overlay-nav .menu-overlay-items a:hover {
+  opacity: 0.7;
+}
+
+/* ============================================
+   CIRCULAR MENU
+   ============================================ */
 .circular-menu {
   position: relative;
   width: 600px;
@@ -123,14 +194,17 @@ a {
   z-index: 10;
 }
 
+/* ============================================
+   JOYSTICK
+   ============================================ */
 .joystick {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 100px;
-  height: 100px;
-  background: #fff;
+  width: var(--joystick-size);
+  height: var(--joystick-size);
+  background: var(--color-text);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -140,9 +214,13 @@ a {
   z-index: 100;
 }
 
+.joystick:active {
+  cursor: grabbing;
+}
+
 .center-icon {
   position: absolute;
-  color: #000;
+  color: var(--color-text-dark);
   font-size: 12px;
 }
 
@@ -174,16 +252,34 @@ a {
   transform: translateY(-50%);
 }
 
+/* ============================================
+   MENU SEGMENTS
+   ============================================ */
 .menu-segment {
   position: absolute;
   width: 100%;
   height: 100%;
-  color: #fff;
+  color: var(--color-text);
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px);
   cursor: pointer;
+  transition: z-index 0s;
 }
 
+.menu-segment:hover,
+.menu-segment[data-active="true"] {
+  animation: flickerHover var(--transition-medium) ease-in-out forwards;
+  z-index: 10;
+}
+
+.menu-segment:hover .segment-content,
+.menu-segment[data-active="true"] .segment-content {
+  animation: contentFlickerHover var(--transition-medium) ease-in-out forwards;
+}
+
+/* ============================================
+   SEGMENT CONTENT
+   ============================================ */
 .segment-content {
   position: absolute;
   display: flex;
@@ -201,31 +297,32 @@ a {
 
 .label {
   text-transform: none;
-  font-family: "Host Grotesk";
+  font-family: var(--font-primary);
   font-size: 15px;
   font-weight: 500;
 }
 
-.menu-segment:hover {
-  animation: flickerHover 350ms ease-in-out forwards;
-  z-index: 10;
-}
-
-.menu-segment:hover .segment-content {
-  animation: contentFlickerHover 350ms ease-in-out forwards;
-}
-
-.menu-overlay {
-  opacity: 0;
-  pointer-events: none;
-}
-
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 @media (max-width: 1000px) {
   .segment-content ion-icon {
     font-size: 20px;
   }
+
+  .label {
+    font-size: 12px;
+  }
+
+  .menu-toggle-btn {
+    width: 18rem;
+    height: 8rem;
+  }
 }
 
+/* ============================================
+   ANIMATIONS
+   ============================================ */
 @keyframes flickerHover {
   0% {
     background: rgba(255, 255, 255, 0.05);

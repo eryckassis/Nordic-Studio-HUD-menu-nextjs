@@ -1,11 +1,7 @@
-// Global type definitions
+// Global type declarations for ion-icon Web Component
 
 import "react";
 
-/**
- * Declaração de tipo para o Web Component ion-icon
- * Centralizado aqui para evitar declarações duplicadas
- */
 declare module "react" {
   namespace JSX {
     interface IntrinsicElements {
@@ -20,5 +16,3 @@ declare module "react" {
     }
   }
 }
-
-export {};

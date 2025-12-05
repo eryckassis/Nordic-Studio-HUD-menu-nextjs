@@ -22,7 +22,7 @@ export interface SegmentGeometry {
 export interface CircularMenuProps {
   items?: MenuItem[];
   className?: string;
-  onItemselect?: (item: MenuItem, index: number) => void;
+  onItemSelect?: (item: MenuItem, index: number) => void;
   onOpen?: () => void;
   onClose?: () => void;
   disableSounds?: boolean;
@@ -50,7 +50,7 @@ export interface MenuOverlayProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  OverlayRef: React.RefObject<HTMLDivElement | null>;
+  overlayRef: React.RefObject<HTMLDivElement | null>;
   navRef: React.RefObject<HTMLDivElement | null>;
   footerRef: React.RefObject<HTMLDivElement | null>;
 }

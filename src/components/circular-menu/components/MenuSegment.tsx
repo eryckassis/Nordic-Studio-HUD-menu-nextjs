@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import type { MenuSegmentProps } from "../CircularMenu.types";
 import { calculateSegmentGeometry } from "../utils/geometry";
+import { IonIcon } from "./IonIcon";
 
 export const MenuSegment = ({
   item,
@@ -20,7 +21,7 @@ export const MenuSegment = ({
     () => ({
       clipPath: `path('${geometry.pathData}')`,
       width: `${config.menuSize}px`,
-      heigth: `${config.menuSize}px`,
+      height: `${config.menuSize}px`,
     }),
     [geometry.pathData, config.menuSize]
   );
@@ -44,23 +45,9 @@ export const MenuSegment = ({
       data-index={index}
     >
       <div className="segment-content" style={contentStyle}>
-        <ion-icon name={item.icon} />
+        <IonIcon name={item.icon} />
         <div className="label">{item.label}</div>
       </div>
     </a>
   );
 };
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "ion-icon": React.DetailedHTMLProps<
-        React.HTMLAttributes<HTMLElement> & {
-          name?: string;
-          size?: string;
-        },
-        HTMLElement
-      >;
-    }
-  }
-}
